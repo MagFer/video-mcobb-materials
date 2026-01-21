@@ -63,15 +63,53 @@ struct TypewriterIterator: AsyncIteratorProtocol {
 }
 
 // Comment out this Task before running AsyncStreams
-Task {
-  for try await item in Typewriter(phrase: "Hello, world!") {
-    print(item)
-  }
-  print("AsyncSequence Done")
-}
+//Task {
+//  for try await item in Typewriter(phrase: "Hello, world!") {
+//    print(item)
+//  }
+//  print("AsyncSequence Done")
+//}
 //: ## Two Kinds of AsyncStream
 let phrase = "Hello, world!"
 var index = phrase.startIndex
 // Typewriter with push-based AsyncStream
+let stream_push = AsyncStream<String> { continuation in
+    Task {
+        while index < phrase.endIndex {
+            do {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                continuation.yield(String(phrase[phrase.startIndex...index]))
+                index = phrase.index(after: index)
+            } catch {
+                continuation.finish()
+            }
+        }
+        continuation.finish()
+    }
+}
+
+Task {
+    for try await item in stream_push {
+        print(item)
+    }
+    print("Push AsyncStream Done")
+}
 
 // Typewriter with pull-based AsyncStream
+let stream_pull = AsyncStream<String> {
+    guard index < phrase.endIndex else { return nil }
+    do {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+    } catch {
+        return nil
+    }
+    defer { index = phrase.index(after: index) }
+    return String(phrase[phrase.startIndex...index])
+}
+
+Task {
+    for try await item in stream_pull {
+        print(item)
+    }
+    print("Pull AsyncStream Done")
+}
