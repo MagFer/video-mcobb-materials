@@ -56,19 +56,35 @@ struct TypewriterIterator: AsyncIteratorProtocol {
   mutating func next() async throws -> String? {
     guard index < phrase.endIndex else { return nil }
 //    try await Task.sleep(until: .now + .seconds(1), clock: .continuous)
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(nanoseconds: 500_000_000)
     defer { index = phrase.index(after: index) }
     return String(phrase[phrase.startIndex...index])
   }
 }
 
 // Comment out this Task before running AsyncStreams
-//Task {
-//  for try await item in Typewriter(phrase: "Hello, world!") {
-//    print(item)
-//  }
-//  print("AsyncSequence Done")
-//}
+// AsyncSecuence supports multiple observations.
+let typewritterSequence = Typewriter(phrase: "Hello, world!")
+
+let taskOne = Task {
+  for try await item in typewritterSequence {
+    print("1. \(item)")
+  }
+  print("AsyncSequence Done")
+}
+
+let taskTwo = Task {
+  for try await item in typewritterSequence {
+      print("2. \(item)")
+  }
+  print("AsyncSequence Done")
+}
+
+Task {
+    try await (taskOne.value, taskTwo.value)
+    print("Both tasks have completed successfully.")
+    
+}
 //: ## Two Kinds of AsyncStream
 let phrase = "Hello, world!"
 var index = phrase.startIndex
