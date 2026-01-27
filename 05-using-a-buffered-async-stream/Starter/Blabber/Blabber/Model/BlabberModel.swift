@@ -53,20 +53,36 @@ class BlabberModel: ObservableObject {
   }
 
   /// Uses push-based AsyncStream to countdown and send the message.
+  @MainActor
   func countdown(to message: String) async throws {
     guard !message.isEmpty else { return }
-    let counter = AsyncStream<String> { continuation in
+    for await countdown in counter() {
+      if countdown == 0 {
+        try await say("🎉 " + message)
+        return
+      }
+      try await say("\(countdown)...")
+    }
+  }
+  
+  private func counter() -> AsyncStream<Int> {
+    return AsyncStream<Int> { continuation in
       var countdown = 3
-      Timer.scheduledTimer(
+      let timer = Timer.scheduledTimer(
         withTimeInterval: 1.0,
         repeats: true
       ) { timer in
-        // TODO: Challenge code
+        guard countdown > 0 else {
+          timer.invalidate()
+          // I can finish it calling yield(.success) instead of finish
+           continuation.yield(with: .success(countdown))
+          // continuation.finish()
+          return
+        }
+        continuation.yield(countdown)
+        countdown -= 1
       }
-    }
-
-    for await countdownMessage in counter {
-      try await say(countdownMessage)
+      RunLoop.main.add(timer, forMode: .common)
     }
   }
 
