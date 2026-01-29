@@ -4,6 +4,8 @@
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location in order for you to share it with your friends in chat</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your constant location in order for you to share it with your friends in chat</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>19919.ttf</string>
