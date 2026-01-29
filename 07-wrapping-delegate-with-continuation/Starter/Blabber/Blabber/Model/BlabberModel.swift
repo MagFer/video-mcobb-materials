@@ -52,7 +52,9 @@ class BlabberModel: ObservableObject {
   func shareLocation() async throws {
     let location: CLLocation =
     try await withCheckedThrowingContinuation { [weak self] continuation in
-      self?.delegate = ChatLocationDelegate(continuation: continuation)
+      Task { @MainActor in
+        self?.delegate = ChatLocationDelegate(continuation: continuation)
+      }
     }
     print(location.description)
   }

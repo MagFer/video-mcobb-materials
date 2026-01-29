@@ -33,7 +33,8 @@
 import Foundation
 import CoreLocation
 
-class ChatLocationDelegate: NSObject, CLLocationManagerDelegate {
+@MainActor
+class ChatLocationDelegate: NSObject, @MainActor CLLocationManagerDelegate {
   private let manager = CLLocationManager()
   
   typealias LocationContinuation = CheckedContinuation<CLLocation, Error>
