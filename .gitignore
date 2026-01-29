@@ -287,3 +287,10 @@ DerivedData/
 
 ## Gcc Patch
 /*.gcno
+
+
+############################################################
+# CourseServer (SwiftPM build artifacts)                    #
+############################################################
+CourseServer/.build/
+CourseServer/.swiftpm/
