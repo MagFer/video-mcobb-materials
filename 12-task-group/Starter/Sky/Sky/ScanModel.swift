@@ -70,6 +70,22 @@ class ScanModel: ObservableObject {
 
   func runAllTasks() async {
     started = Date()
+    await withTaskGroup(of: String.self) { [unowned self] group in
+      for number in 0..<total {
+        group.addTask {
+          await self.worker(number: number)
+        }
+      }
+    }
+  }
+  
+  func runAllTasksSerially() async {
+    started = Date()
+    var scans: [String] = []
+    for number in 0..<total {
+      scans.append(try await worker(number: number))
+    }
+    print(scans)
   }
 }
 
