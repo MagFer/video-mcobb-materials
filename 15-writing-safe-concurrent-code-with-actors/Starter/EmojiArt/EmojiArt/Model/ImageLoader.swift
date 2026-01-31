@@ -1,5 +1,5 @@
 /// Copyright (c) 2022 Razeware LLC
-/// 
+///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -32,7 +32,7 @@
 
 import UIKit
 
-actor ImageLoader {
+actor ImageLoader: ObservableObject {
   enum DownloadState {
     case inProgress(Task<UIImage, Error>)
     case completed(UIImage)
